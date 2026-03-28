@@ -13,6 +13,11 @@ def home():
 def health():
     return jsonify({"status": "running", "message": "App is healthy!"})
 
+@app.route('/crash')
+def crash():
+    import os
+    os.abort()
+
 @app.route('/monitor')
 def monitor():
     try:
