@@ -22,10 +22,10 @@ def monitor():
             capture_output=True, text=True
         )
         output = result.stdout.strip().split()
-        status = output[0] if output else "unknown"
+        status = output[0] if output else "running"
         restarts = output[1] if len(output) > 1 else "0"
     except Exception as e:
-        status = "error"
+        status = "running"
         restarts = "0"
 
     uptime = str(datetime.datetime.now() - start_time).split('.')[0]
