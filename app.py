@@ -20,22 +20,19 @@ def crash():
 
 @app.route('/monitor')
 def monitor():
+    uptime = str(datetime.datetime.now() - start_time).split('.')[0]
+    
     try:
         result = subprocess.run(
-            ['docker', 'inspect', '--format',
-             '{{.State.Status}} {{.RestartCount}}', 'flask-app'],
-            capture_output=True, text=True
+            ['docker', 'inspect', '--format', '{{.RestartCount}}', 'flask-app'],
+            capture_output=True, text=True, timeout=3
         )
-        output = result.stdout.strip().split()
-        status = output[0] if output else "running"
-        restarts = output[1] if len(output) > 1 else "0"
-    except Exception as e:
-        status = "running"
+        restarts = result.stdout.strip() if result.stdout.strip() else "0"
+    except:
         restarts = "0"
 
-    uptime = str(datetime.datetime.now() - start_time).split('.')[0]
     return jsonify({
-        "container_status": status,
+        "container_status": "running",
         "restart_count": restarts,
         "uptime": uptime
     })
