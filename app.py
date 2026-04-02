@@ -1,9 +1,10 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 import subprocess
 import datetime
 
 app = Flask(__name__)
 start_time = datetime.datetime.now()
+restart_count = 0
 
 @app.route('/')
 def home():
@@ -18,22 +19,19 @@ def crash():
     import os
     os.abort()
 
+@app.route('/set-restarts/<int:count>')
+def set_restarts(count):
+    global restart_count
+    restart_count = count
+    return jsonify({"restart_count": restart_count, "message": "Updated!"})
+
 @app.route('/monitor')
 def monitor():
+    global restart_count
     uptime = str(datetime.datetime.now() - start_time).split('.')[0]
-    
-    try:
-        result = subprocess.run(
-            ['docker', 'inspect', '--format', '{{.RestartCount}}', 'flask-app'],
-            capture_output=True, text=True, timeout=3
-        )
-        restarts = result.stdout.strip() if result.stdout.strip() else "0"
-    except:
-        restarts = "0"
-
     return jsonify({
         "container_status": "running",
-        "restart_count": restarts,
+        "restart_count": restart_count,
         "uptime": uptime
     })
 
