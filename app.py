@@ -11,7 +11,7 @@ def home():
 
 @app.route('/health')
 def health():
-    return jsonify({"status": "running", "message": "App is healthy!"})
+    return jsonify({"status": "running", "message": "App is healthy - Version 3.0!"})
 
 @app.route('/crash')
 def crash():
